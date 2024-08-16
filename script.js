@@ -1,12 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const settingsIcon = document.getElementById('settings-icon');
-    const settingsPopup = document.getElementById('settings-popup');
-    const saveSettingsButton = document.getElementById('save-settings');
-
-    let workdayTime = 8 * 60 * 60; // Default to 8 hours
-    let focusTime = 52 * 60; // Default to 52 minutes
-    let breakTime = 17 * 60; // Default to 17 minutes
-
     const formatTime = (seconds, showHours = false) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -16,6 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
         }
+    };
+
+    const parseTime = (timeString, showHours = false) => {
+        const parts = timeString.split(':');
+        let seconds = 0;
+        if (showHours && parts.length === 3) {
+            seconds += parseInt(parts[0], 10) * 3600;
+            seconds += parseInt(parts[1], 10) * 60;
+            seconds += parseInt(parts[2], 10);
+        } else if (parts.length === 2) {
+            seconds += parseInt(parts[0], 10) * 60;
+            seconds += parseInt(parts[1], 10);
+        }
+        return seconds;
     };
 
     const createTimer = (displayElement, startButton, pauseButton, resetButton, initialTime, showHours = false, onEndCallback = null) => {
@@ -85,60 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay();
     };
 
-    settingsIcon.addEventListener('click', () => {
-        settingsPopup.classList.toggle('hidden');
-    });
-
-    saveSettingsButton.addEventListener('click', () => {
-        const workdayHours = parseInt(document.getElementById('default-workday-hours').value, 10) || 0;
-        const workdayMinutes = parseInt(document.getElementById('default-workday-minutes').value, 10) || 0;
-        const focusMinutes = parseInt(document.getElementById('default-focus-minutes').value, 10) || 0;
-        const focusBreakMinutes = parseInt(document.getElementById('default-focus-break-minutes').value, 10) || 0;
-
-        workdayTime = (workdayHours * 3600) + (workdayMinutes * 60);
-        focusTime = focusMinutes * 60;
-        breakTime = focusBreakMinutes * 60;
-
-        createTimer(
-            document.getElementById('workday-display'),
-            document.getElementById('workday-start'),
-            document.getElementById('workday-pause'),
-            document.getElementById('workday-reset'),
-            workdayTime,
-            true
-        );
-
-        start52_17Timer();
-        settingsPopup.classList.add('hidden');
-    });
-
-    const parseTime = (timeString, showHours = false) => {
-        const parts = timeString.split(':');
-        let seconds = 0;
-        if (showHours && parts.length === 3) {
-            seconds += parseInt(parts[0], 10) * 3600;
-            seconds += parseInt(parts[1], 10) * 60;
-            seconds += parseInt(parts[2], 10);
-        } else if (parts.length === 2) {
-            seconds += parseInt(parts[0], 10) * 60;
-            seconds += parseInt(parts[1], 10);
-        }
-        return seconds;
-    };
-
     createTimer(
         document.getElementById('workday-display'),
         document.getElementById('workday-start'),
         document.getElementById('workday-pause'),
         document.getElementById('workday-reset'),
-        workdayTime,
+        8 * 60 * 60,
         true
     );
 
     let isBreak = false;
 
     const start52_17Timer = () => {
-        const initialTime = isBreak ? breakTime : focusTime;
+        const initialTime = isBreak ? 17 * 60 : 52 * 60;
         const timerLabel = isBreak ? 'Break' : 'Work';
 
         createTimer(
@@ -207,7 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
         li.appendChild(deleteButton);
 
-        taskList.appendChild(li);
+        // Insert the new task at the top of the task list if it's incomplete
+        // Otherwise, add it to the bottom if it's completed
+        if (completed) {
+            taskList.appendChild(li);
+        } else {
+            taskList.insertBefore(li, taskList.firstChild);
+        }
 
         completeButton.addEventListener('click', () => {
             li.classList.toggle('completed');
