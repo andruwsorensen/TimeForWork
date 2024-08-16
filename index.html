@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time to Work</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Time to Work</h1>
+    </header>
+    
+    <main>
+        <section id="timers">
+            <div id="workday-timer">
+                <h2>Workday Timer</h2>
+                <div id="workday-display">08:00:00</div>
+                <button id="workday-start">Start</button>
+                <button id="workday-pause">Pause</button>
+                <button id="workday-reset">Reset</button>
+            </div>
+
+            <div id="focus-timer">
+                <h2>Focus Timer</h2>
+                <div id="focus-display">52:00</div>
+                <button id="focus-start">Start</button>
+                <button id="focus-pause">Pause</button>
+                <button id="focus-reset">Reset</button>
+            </div>
+        </section>
+
+        <section id="tasks">
+            <h2>Task List</h2>
+            <form id="task-form">
+                <input type="text" id="task-input" placeholder="Enter a task">
+                <button type="submit">Add Task</button>
+            </form>
+            <ul id="task-list"></ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Time to Work</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
