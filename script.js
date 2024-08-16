@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Utility function to format time (hh:mm:ss)
+    const settingsIcon = document.getElementById('settings-icon');
+    const settingsPopup = document.getElementById('settings-popup');
+    const saveSettingsButton = document.getElementById('save-settings');
+
+    let workdayTime = 8 * 60 * 60; // Default to 8 hours
+    let focusTime = 52 * 60; // Default to 52 minutes
+    let breakTime = 17 * 60; // Default to 17 minutes
+
     const formatTime = (seconds, showHours = false) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -11,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Timer function
     const createTimer = (displayElement, startButton, pauseButton, resetButton, initialTime, showHours = false, onEndCallback = null) => {
         let timeRemaining = initialTime;
         let intervalId = null;
@@ -54,30 +60,89 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseButton.addEventListener('click', pauseTimer);
         resetButton.addEventListener('click', resetTimer);
 
-        // Initialize the display
+        displayElement.addEventListener('click', () => {
+            displayElement.contentEditable = true;
+            displayElement.focus();
+        });
+
+        displayElement.addEventListener('blur', () => {
+            const newTime = parseTime(displayElement.textContent, showHours);
+            if (newTime >= 0) {
+                timeRemaining = newTime;
+                initialTime = newTime;
+            }
+            displayElement.contentEditable = false;
+            updateDisplay();
+        });
+
+        displayElement.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                displayElement.blur();
+            }
+        });
+
         updateDisplay();
     };
 
-    // Workday Timer (8 hours) - Display in hh:mm:ss format
+    settingsIcon.addEventListener('click', () => {
+        settingsPopup.classList.toggle('hidden');
+    });
+
+    saveSettingsButton.addEventListener('click', () => {
+        const workdayHours = parseInt(document.getElementById('default-workday-hours').value, 10) || 0;
+        const workdayMinutes = parseInt(document.getElementById('default-workday-minutes').value, 10) || 0;
+        const focusMinutes = parseInt(document.getElementById('default-focus-minutes').value, 10) || 0;
+        const focusBreakMinutes = parseInt(document.getElementById('default-focus-break-minutes').value, 10) || 0;
+
+        workdayTime = (workdayHours * 3600) + (workdayMinutes * 60);
+        focusTime = focusMinutes * 60;
+        breakTime = focusBreakMinutes * 60;
+
+        createTimer(
+            document.getElementById('workday-display'),
+            document.getElementById('workday-start'),
+            document.getElementById('workday-pause'),
+            document.getElementById('workday-reset'),
+            workdayTime,
+            true
+        );
+
+        start52_17Timer();
+        settingsPopup.classList.add('hidden');
+    });
+
+    const parseTime = (timeString, showHours = false) => {
+        const parts = timeString.split(':');
+        let seconds = 0;
+        if (showHours && parts.length === 3) {
+            seconds += parseInt(parts[0], 10) * 3600;
+            seconds += parseInt(parts[1], 10) * 60;
+            seconds += parseInt(parts[2], 10);
+        } else if (parts.length === 2) {
+            seconds += parseInt(parts[0], 10) * 60;
+            seconds += parseInt(parts[1], 10);
+        }
+        return seconds;
+    };
+
     createTimer(
         document.getElementById('workday-display'),
         document.getElementById('workday-start'),
         document.getElementById('workday-pause'),
         document.getElementById('workday-reset'),
-        8 * 60 * 60,  // 8 hours
-        true           // Show hours
+        workdayTime,
+        true
     );
 
-    // 52/17 Timer (52 minutes work / 17 minutes break)
-    const focusElement = document.getElementById('focus-display');
     let isBreak = false;
 
     const start52_17Timer = () => {
-        const initialTime = isBreak ? 17 * 60 : 52 * 60;
+        const initialTime = isBreak ? breakTime : focusTime;
         const timerLabel = isBreak ? 'Break' : 'Work';
 
         createTimer(
-            focusElement,
+            document.getElementById('focus-display'),
             document.getElementById('focus-start'),
             document.getElementById('focus-pause'),
             document.getElementById('focus-reset'),
@@ -89,13 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 start52_17Timer();
             }
         );
-
-        focusElement.textContent = formatTime(initialTime);
     };
 
-    start52_17Timer();  // Initialize the 52/17 timer
+    start52_17Timer();
 
-    // Task Management Logic
+    // Task Management Logic with Reordering and Completed Task Movement
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
@@ -118,6 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addTaskToDOM = (taskText, completed = false) => {
         const li = document.createElement('li');
+        li.draggable = true;
+
         if (completed) {
             li.classList.add('completed');
         }
@@ -144,13 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         taskList.appendChild(li);
 
-        // Handle task completion
         completeButton.addEventListener('click', () => {
             li.classList.toggle('completed');
+            moveCompletedTaskToBottom(li);
             saveTasks();
         });
 
-        // Handle inline editing
         span.addEventListener('click', () => {
             span.contentEditable = true;
             span.focus();
@@ -164,17 +228,50 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Handle edit button functionality (as a fallback if needed)
         editButton.addEventListener('click', () => {
             span.contentEditable = true;
             span.focus();
         });
 
-        // Handle delete functionality
         deleteButton.addEventListener('click', () => {
             li.remove();
             saveTasks();
         });
+
+        // Drag and Drop logic
+        li.addEventListener('dragstart', (e) => {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', li.outerHTML);
+            li.classList.add('dragging');
+        });
+
+        li.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingElement = taskList.querySelector('.dragging');
+            const currentElement = li;
+            if (draggingElement && draggingElement !== currentElement) {
+                const bounding = currentElement.getBoundingClientRect();
+                const offset = bounding.y + (bounding.height / 2);
+                if (e.clientY - offset > 0) {
+                    taskList.insertBefore(draggingElement, currentElement.nextSibling);
+                } else {
+                    taskList.insertBefore(draggingElement, currentElement);
+                }
+            }
+        });
+
+        li.addEventListener('dragend', () => {
+            li.classList.remove('dragging');
+            saveTasks();
+        });
+    };
+
+    const moveCompletedTaskToBottom = (taskElement) => {
+        if (taskElement.classList.contains('completed')) {
+            taskList.appendChild(taskElement);
+        } else {
+            taskList.insertBefore(taskElement, taskList.firstChild);
+        }
     };
 
     loadTasks();

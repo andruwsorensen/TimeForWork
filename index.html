@@ -11,8 +11,30 @@
 <body>
     <header>
         <h1>Time to Work</h1>
+        <div id="settings-icon">
+            <i class="fas fa-cog"></i>
+        </div>
     </header>
     
+    <div id="settings-popup" class="hidden">
+        <h2>Settings</h2>
+        <div class="settings-section">
+            <h3>Workday Timer Defaults</h3>
+            <label for="default-workday-hours">Hours:</label>
+            <input type="number" id="default-workday-hours" min="0" max="24" value="8">
+            <label for="default-workday-minutes">Minutes:</label>
+            <input type="number" id="default-workday-minutes" min="0" max="59" value="0">
+        </div>
+        <div class="settings-section">
+            <h3>Focus Timer Defaults</h3>
+            <label for="default-focus-minutes">Work Duration (Minutes):</label>
+            <input type="number" id="default-focus-minutes" min="0" max="59" value="52">
+            <label for="default-focus-break-minutes">Break Duration (Minutes):</label>
+            <input type="number" id="default-focus-break-minutes" min="0" max="59" value="17">
+        </div>
+        <button id="save-settings">Save Settings</button>
+    </div>
+
     <main>
         <section id="timers">
             <div id="workday-timer">

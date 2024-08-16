@@ -8,11 +8,98 @@ body {
     min-height: 100vh;
 }
 
-header, footer {
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 1em;
+    position: relative;
+}
+
+header h1 {
+    margin: 0;
+}
+
+#settings-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+main {
+    flex: 1;
+    padding: 1em;
+}
+
+footer {
     background-color: #333;
     color: white;
     text-align: center;
     padding: 1em;
+    margin-top: auto;
+}
+
+
+#settings-popup {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1em;
+    z-index: 1000;
+    width: 250px;
+}
+
+#settings-popup.hidden {
+    display: none;
+}
+
+#settings-popup h2 {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+.settings-section {
+    margin-bottom: 1em;
+}
+
+.settings-section h3 {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+#settings-popup label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+#settings-popup input {
+    width: 100%;
+    padding: 0.3em;
+    margin-bottom: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#settings-popup button {
+    width: 100%;
+    padding: 0.5em;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#settings-popup button:hover {
+    background-color: #0056b3;
 }
 
 main {
@@ -24,7 +111,6 @@ main {
     margin-bottom: 1.5em;
 }
 
-/* Timer styles */
 #timers {
     display: flex;
     flex-wrap: wrap;
@@ -188,9 +274,24 @@ button:active {
     button {
         width: 80%;
     }
+
+    #settings-popup {
+        width: 90%;
+        right: 5%;
+    }
 }
 
 @media (max-width: 480px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #settings-icon {
+        position: static;
+        margin-top: 10px;
+    }
+
     #workday-display, #focus-display {
         font-size: 1.5em;
     }
@@ -225,5 +326,11 @@ button:active {
         margin-right: 0;
         padding-right: 0;
         width: 100%;
+    }
+
+    #settings-popup {
+        width: 90%;
+        right: 5%;
+        top: 70px;
     }
 }
