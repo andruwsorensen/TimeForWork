@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const settingsIcon = document.getElementById('settings-icon');
+    const settingsPopup = document.getElementById('settings-popup');
+    const saveSettingsButton = document.getElementById('save-settings');
+
     const formatTime = (seconds, showHours = false) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -123,6 +127,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     start52_17Timer();
 
+    // Event listener for toggling the settings popup
+    settingsIcon.addEventListener('click', () => {
+        settingsPopup.classList.toggle('hidden');
+    });
+
+    // Event listener for saving settings
+    saveSettingsButton.addEventListener('click', () => {
+        const workdayHours = parseInt(document.getElementById('default-workday-hours').value, 10) || 0;
+        const workdayMinutes = parseInt(document.getElementById('default-workday-minutes').value, 10) || 0;
+        const focusMinutes = parseInt(document.getElementById('default-focus-minutes').value, 10) || 0;
+        const focusBreakMinutes = parseInt(document.getElementById('default-focus-break-minutes').value, 10) || 0;
+
+        const workdayTime = (workdayHours * 3600) + (workdayMinutes * 60);
+        const focusTime = focusMinutes * 60;
+        const breakTime = focusBreakMinutes * 60;
+
+        createTimer(
+            document.getElementById('workday-display'),
+            document.getElementById('workday-start'),
+            document.getElementById('workday-pause'),
+            document.getElementById('workday-reset'),
+            workdayTime,
+            true
+        );
+
+        start52_17Timer();
+        settingsPopup.classList.add('hidden');
+    });
+
     // Task Management Logic with Reordering and Completed Task Movement
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
@@ -172,8 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
         li.appendChild(deleteButton);
 
-        // Insert the new task at the top of the task list if it's incomplete
-        // Otherwise, add it to the bottom if it's completed
         if (completed) {
             taskList.appendChild(li);
         } else {
