@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isBreak = false;
 
-    const start52_17Timer = () => {
+    const focusTimer = () => {
         const initialTime = isBreak ? 17 * 60 : 52 * 60;
         const timerLabel = isBreak ? 'Break' : 'Work';
 
@@ -120,12 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
             () => {
                 isBreak = !isBreak;
                 alert(`${timerLabel} time is over!`);
-                start52_17Timer();
+                focusTimer();
             }
         );
     };
 
-    start52_17Timer();
+    focusTimer();
 
     // Event listener for toggling the settings popup
     settingsIcon.addEventListener('click', () => {
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             true
         );
 
-        start52_17Timer();
+        focusTimer();
         settingsPopup.classList.add('hidden');
     });
 
