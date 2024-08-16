@@ -19,7 +19,7 @@ To run this project, you need a modern web browser that supports HTML5, CSS3, an
 
 1. **Clone the Repository**
     ```bash
-    git clone https://github.com/your-username/time-to-work.git
+    git clone https://github.com/andruwsorensen/TimeForWork.git
     ```
 2. **Navigate to the Project Directory**
     ```bash
