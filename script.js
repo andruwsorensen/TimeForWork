@@ -160,10 +160,76 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
+    const tabList = document.getElementById('tab-list');
+    const addTabButton = document.getElementById('add-tab');
+    const tabs = document.querySelectorAll('.tab-button');
+
+
+    // Task tabs logic
+    // tabs.forEach(tab => {
+    //     tab.addEventListener('click', function() {
+    //       document.querySelector('.tab-button.active').classList.remove('active');
+    //       this.classList.add('active');
+    //       filterTasks(this.getAttribute('data-category'));
+    //     });
+    //   });
+
+    function filterTasks(category) {
+        console.log('this happened');
+        const tasks = document.querySelectorAll('.task-items')
+        tasks.forEach(task => {
+            if (task.getAttribute('data-category') === category) {
+                task.classList.remove('hidden')
+            } else {
+                task.classList.add('hidden')
+            }
+        })
+    }
+
+    addTabToDOM = (tabText, category) => {
+        const tab = document.createElement('button');
+        tab.className = 'tab-button';
+        tab.setAttribute('data-category', category);
+        tab.textContent = tabText;
+
+        tabList.insertBefore(tab, tabList.firstChild);
+
+        tab.addEventListener('click', () => {
+            document.querySelector('.tab-button.active').classList.remove('active');
+            tab.classList.add('active');
+            filterTasks(tab.getAttribute('data-category')); 
+        })
+    }
+
+    const loadTabs = () => {
+        const tabs = JSON.parse(localStorage.getItem('tabs')) || [];
+        tabs.forEach(tab => addTabToDOM(tab.text, tab.category));
+        tabList.querySelector(':first-child').classList.add('active');    
+    };
+
+    const saveTabs = () => {
+        const tabs = [];
+        tabList.querySelectorAll('.tab-button').forEach(tab => {
+            tabs.push({
+                text: tab.textContent,
+                category: tab.getAttribute('data-category')
+            });
+        });
+        localStorage.setItem('tabs', JSON.stringify(tabs));
+    };
+
+    addTabButton.addEventListener('click', function() {
+        const tabText = prompt('Enter new category name:');
+        if (tabText) {
+            const category = tabText.replace(/ /g, '').toLowerCase();
+            addTabToDOM(tabText, category);
+            saveTabs();
+        }
+    })
 
     const loadTasks = () => {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        tasks.forEach(task => addTaskToDOM(task.text, task.completed));
+        tasks.forEach(task => addTaskToDOM(task.text, task.completed, task.category));
     };
 
     const saveTasks = () => {
@@ -171,15 +237,18 @@ document.addEventListener('DOMContentLoaded', () => {
         taskList.querySelectorAll('li').forEach(li => {
             tasks.push({
                 text: li.querySelector('.task-text').textContent,
-                completed: li.classList.contains('completed')
+                completed: li.classList.contains('completed'),
+                category: li.getAttribute('data-category')
             });
         });
         localStorage.setItem('tasks', JSON.stringify(tasks));
     };
 
-    const addTaskToDOM = (taskText, completed = false) => {
+    const addTaskToDOM = (taskText, completed = false, category) => {
         const li = document.createElement('li');
         li.draggable = true;
+        li.className = 'task-items';
+        li.setAttribute('data-category', category);
 
         if (completed) {
             li.classList.add('completed');
@@ -276,13 +345,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    loadTabs();
     loadTasks();
+    filterTasks(document.querySelector('.tab-button.active').getAttribute('data-category'));
 
     taskForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const taskText = taskInput.value.trim();
+        const category = document.querySelector('.tab-button.active').getAttribute('data-category');
         if (taskText) {
-            addTaskToDOM(taskText);
+            addTaskToDOM(taskText, false, category);
             saveTasks();
             taskInput.value = '';
         }

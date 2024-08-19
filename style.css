@@ -256,6 +256,10 @@ button:active {
     color: #FF0000;
 }
 
+.hidden {
+    display: none !important;
+}
+
 /* Responsive Design - Media Queries */
 @media (max-width: 768px) {
     #timers {
