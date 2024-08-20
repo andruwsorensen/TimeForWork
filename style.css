@@ -270,6 +270,7 @@ button:active {
     margin-bottom: 0.5em;
     background-color: #007BFF;
     color: white;
+    border-bottom: 1px solid #ddd;  
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -291,12 +292,12 @@ button:active {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.5em;
-    border-radius: 5px;
+    padding: 0.2em;
+    border-radius: 2px;
     font-size: 1.2em;
     color: white;
     transition: background-color 0.3s ease;
-    margin-left: 0.5em;
+    margin-left: 0.3em;
 }
 
 #tab-container .edit-tab-btn:hover, #tab-container .delete-tab-btn:hover {
@@ -308,11 +309,12 @@ button:active {
 }
 
 #tab-container .edit-tab-btn i {
-    color: #FFD700;
+    color: white;
 }
 
 #tab-container .delete-tab-btn i {
-    color: #FF6347;
+    color: white;
+    margin-right: 0.4em;
 }
 
 /* Task Form and List */
@@ -399,7 +401,7 @@ button:active {
 }
 
 .edit-btn i {
-    color: #FFD700;
+    color: #007BFF;
 }
 
 .delete-btn i {
