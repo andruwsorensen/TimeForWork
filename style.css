@@ -43,7 +43,6 @@ footer {
     margin-top: auto;
 }
 
-
 #settings-popup {
     position: absolute;
     top: 60px;
@@ -100,6 +99,56 @@ footer {
 
 #settings-popup button:hover {
     background-color: #0056b3;
+}
+
+/* The switch container */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 28px;
+}
+
+/* Hide the default checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+/* The circle inside the slider */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    top: 1px;
+    left: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* When the checkbox is checked, move the slider */
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
 }
 
 main {
@@ -166,7 +215,107 @@ button:active {
     width: 100px;
 }
 
-/* Task list styles */
+/* Tab styles */
+#tab-list {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab-button {
+    background-color: #70a8e3;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+}
+
+.tab-button:hover {
+    background-color: #007BFF;
+}
+
+.tab-button.active {
+    border-bottom: 2px solid #00000040;
+    background-color: #007BFF;
+    font-weight: bold;
+}
+
+#add-tab {
+    background-color: #007BFF;
+    color: white;
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+#add-tab:hover {
+    background-color: #0056b3;
+}
+
+/* Active Tab Container */
+#tab-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.active-tab-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.active-tab {
+    font-size: 1.3em;
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+/* Edit and Delete buttons for the active tab */
+#tab-container .edit-tab-btn, #tab-container .delete-tab-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5em;
+    border-radius: 5px;
+    font-size: 1.2em;
+    color: white;
+    transition: background-color 0.3s ease;
+    margin-left: 0.5em;
+}
+
+#tab-container .edit-tab-btn:hover, #tab-container .delete-tab-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#tab-container .edit-tab-btn i, #tab-container .delete-tab-btn i {
+    font-size: 1.2em;
+}
+
+#tab-container .edit-tab-btn i {
+    color: #FFD700;
+}
+
+#tab-container .delete-tab-btn i {
+    color: #FF6347;
+}
+
+/* Task Form and List */
 #task-form {
     display: flex;
     justify-content: space-between;
@@ -210,8 +359,9 @@ button:active {
 .task-text {
     flex-grow: 1;
     margin-right: 2em;
-    padding-right: 1.5em;
+    padding-right: 5em;
     word-break: break-word;
+    max-width: calc(100% - 13em);
 }
 
 /* Edit, delete, and complete button styles with icons */
@@ -249,7 +399,7 @@ button:active {
 }
 
 .edit-btn i {
-    color: #007BFF;
+    color: #FFD700;
 }
 
 .delete-btn i {
@@ -282,6 +432,28 @@ button:active {
     #settings-popup {
         width: 90%;
         right: 5%;
+    }
+
+    #tab-list {
+        flex-wrap: wrap;
+    }
+
+    .tab-button {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    #tab-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .active-tab {
+        margin-bottom: 0.5em;
+    }
+
+    .edit-tab-btn, .delete-tab-btn {
+        margin-left: 0;
     }
 }
 
@@ -336,5 +508,17 @@ button:active {
         width: 90%;
         right: 5%;
         top: 70px;
+    }
+
+    #tab-container {
+        padding: 0.5em;
+    }
+
+    .active-tab {
+        font-size: 1.3em;
+    }
+
+    .edit-tab-btn, .delete-tab-btn {
+        font-size: 1em;
     }
 }
