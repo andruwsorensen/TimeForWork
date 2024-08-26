@@ -501,6 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100); // Clean up the iframe after a short time
     }
     
-    setInterval(keepAlive, 5000); // Run every 5 seconds
+    setInterval(keepAlive, 3000); // Run every 3 seconds
     
 });
