@@ -489,4 +489,18 @@ document.addEventListener('DOMContentLoaded', () => {
             taskInput.value = '';
         }
     });
+
+    // Keep the tab alive so the timer will work in background
+    function keepAlive() {
+        let iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.contentWindow.location.href = 'about:blank'; // Creates a 'ping'
+        setTimeout(() => {
+            iframe.parentNode.removeChild(iframe);
+        }, 100); // Clean up the iframe after a short time
+    }
+    
+    setInterval(keepAlive, 5000); // Run every 5 seconds
+    
 });
