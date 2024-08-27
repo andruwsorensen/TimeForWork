@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let timeRemaining = initialTime;
         let intervalId = null;
         let startTime = null; // This will hold the time when the timer started
-        const originalInitialTime = initialTime; // Store the original initial time
+        let originalInitialTime = initialTime; // Store the original initial time
     
         const updateDisplay = () => {
             displayElement.textContent = formatTime(timeRemaining, showHours);
@@ -87,8 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const skipTimer = () => {
             isBreak = !isBreak;
-            focusTimer(focusTime, breakTime);
-        }
+            originalInitialTime = isBreak ? breakTime * 60 : focusTime * 60;
+            resetTimer();
+            startTimer();
+        };
     
         startButton.addEventListener('click', startTimer);
         pauseButton.addEventListener('click', pauseTimer);
@@ -141,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     };
+    
     
     
 
