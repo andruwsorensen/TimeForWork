@@ -38,84 +38,97 @@ document.addEventListener('DOMContentLoaded', () => {
     const createTimer = (displayElement, startButton, pauseButton, resetButton, initialTime, showHours = false, skipButton = null, onEndCallback = null) => {
         let timeRemaining = initialTime;
         let intervalId = null;
-
+        let startTime = null; // This will hold the time when the timer started
+        const originalInitialTime = initialTime; // Store the original initial time
+    
         const updateDisplay = () => {
             displayElement.textContent = formatTime(timeRemaining, showHours);
         };
-
-        const startTimer = () => {
-            if (!intervalId) {
-                intervalId = setInterval(() => {
-                    if (timeRemaining > 0) {
-                        timeRemaining--;
-                        updateDisplay();
-                    } else {
-                        if (soundOn.checked) {
-                            sound.play();
-                        }
-                        clearInterval(intervalId);
-                        intervalId = null;
-                        if (onEndCallback) {
-                            onEndCallback();
-                        }
-                    }
-                }, 1000);
+    
+        const tick = () => {
+            const now = Date.now();
+            const elapsed = Math.floor((now - startTime) / 1000); // Calculate elapsed time in seconds
+            timeRemaining = Math.max(originalInitialTime - elapsed, 0);
+            updateDisplay();
+    
+            if (timeRemaining === 0) {
+                clearInterval(intervalId);
+                intervalId = null;
+                if (soundOn.checked) {
+                    sound.play();
+                }
+                if (onEndCallback) {
+                    onEndCallback();
+                }
             }
         };
-
+    
+        const startTimer = () => {
+            if (!intervalId) {
+                startTime = Date.now() - (originalInitialTime - timeRemaining) * 1000; // Adjust start time based on remaining time
+                intervalId = setInterval(tick, 1000);
+            }
+        };
+    
         const pauseTimer = () => {
             if (intervalId) {
                 clearInterval(intervalId);
                 intervalId = null;
+                initialTime = timeRemaining; // Store the remaining time when paused
             }
         };
-
+    
         const resetTimer = () => {
             pauseTimer();
+            initialTime = originalInitialTime; // Reset to the original initial time
             timeRemaining = initialTime;
             updateDisplay();
         };
-
+    
         const skipTimer = () => {
             isBreak = !isBreak;
             focusTimer(focusTime, breakTime);
         }
-
+    
         startButton.addEventListener('click', startTimer);
         pauseButton.addEventListener('click', pauseTimer);
         resetButton.addEventListener('click', resetTimer);
         if (skipButton) {
             skipButton.addEventListener('click', skipTimer);
         }
-
+    
         displayElement.addEventListener('click', () => {
             displayElement.contentEditable = true;
             displayElement.focus();
         });
-
+    
         displayElement.addEventListener('blur', () => {
-            console.log(displayElement.id);
             const newTime = parseTime(displayElement.textContent, showHours);
-            if (displayElement.id === 'focus-display' && newTime > 3599) {
-                timeRemaining = 3599;
-            } else if (displayElement.id === 'workday-display' && newTime > 89999) {
-                timeRemaining = 89999
-            } else if (newTime >= 0) {
+            if (newTime >= 0) {
                 timeRemaining = newTime;
+                initialTime = newTime;
+                originalInitialTime = newTime; // Update the original initial time
+                startTime = Date.now(); // Adjust start time when manually changing the timer
             }
             displayElement.contentEditable = false;
             updateDisplay();
         });
-
+    
         displayElement.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 displayElement.blur();
             }
         });
-
+    
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                tick(); // Recalculate the remaining time when the tab becomes visible again
+            }
+        });
+    
         updateDisplay();
-
+    
         return {
             start: startTimer,
             pause: pauseTimer,
@@ -123,10 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
             skip: skipTimer,
             updateInitialTime: (newInitialTime) => {
                 initialTime = newInitialTime;
+                originalInitialTime = newInitialTime; // Also update the original initial time
                 resetTimer();  // Reset timer with the updated initial time
             }
         };
     };
+    
+    
 
     createTimer(
         document.getElementById('workday-display'),
