@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let intervalId = null;
         let startTime = null; // This will hold the time when the timer started
         let originalInitialTime = initialTime; // Store the original initial time
+        let isPaused = true
     
         const updateDisplay = () => {
             displayElement.textContent = formatTime(timeRemaining, showHours);
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timeRemaining === 0) {
                 clearInterval(intervalId);
                 intervalId = null;
+                isPaused = true;
                 if (soundOn.checked) {
                     sound.play();
                 }
@@ -65,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const startTimer = () => {
             if (!intervalId) {
+                isPaused = false;
                 startTime = Date.now() - (originalInitialTime - timeRemaining) * 1000; // Adjust start time based on remaining time
                 intervalId = setInterval(tick, 1000);
             }
@@ -75,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(intervalId);
                 intervalId = null;
                 initialTime = timeRemaining; // Store the remaining time when paused
+                isPaused = true;
             }
         };
     
@@ -89,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isBreak = !isBreak;
             originalInitialTime = isBreak ? breakTime * 60 : focusTime * 60;
             resetTimer();
-            startTimer();
         };
     
         startButton.addEventListener('click', startTimer);
@@ -125,7 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
-                tick(); // Recalculate the remaining time when the tab becomes visible again
+                if (!isPaused) {
+                    tick(); // Recalculate the remaining time when the tab becomes visible again
+                }
             }
         });
     
