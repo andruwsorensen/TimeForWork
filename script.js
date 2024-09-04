@@ -230,7 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Task Management Logic with Reordering and Completed Task Movement
+    // * Task Management Logic with Reordering and Completed Task Movement
+
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
@@ -252,11 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    addTabToDOM = (tabText, category) => {
+    const addTabToDOM = (tabText, category) => {
         const tab = document.createElement('button');
         tab.className = 'tab-button';
         tab.setAttribute('data-category', category);
         tab.textContent = tabText;
+        tab.draggable = true; // Make the tab draggable
 
         tabList.insertBefore(tab, tabList.firstChild);
 
@@ -268,6 +270,34 @@ document.addEventListener('DOMContentLoaded', () => {
             filterTasks(tab.getAttribute('data-category'));
             updateActiveTabInContainer(tab);
             updateTaskFormState();
+        });
+
+        // Drag and Drop logic for tabs
+        tab.addEventListener('dragstart', (e) => {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', tab.getAttribute('data-category'));
+            tab.classList.add('dragging');
+        });
+
+        tab.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingTab = tabList.querySelector('.dragging');
+            currentElement = tab;
+            if (draggingTab && draggingTab !== currentElement) {
+                const bounding = currentElement.getBoundingClientRect();
+                const offset = bounding.x + (bounding.width / 2);
+                if (e.clientX - offset > 0) {
+                    tabList.insertBefore(draggingTab, currentElement.nextSibling);
+                } else {
+                    tabList.insertBefore(draggingTab, currentElement);
+                }
+            }
+        });
+
+        tab.addEventListener('dragend', () => {
+            tab.classList.remove('dragging');
+            const draggingTab = tabList.querySelector('.dragging');
+            saveTabs();
         });
     };
 
