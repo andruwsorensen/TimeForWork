@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let intervalId = null;
         let startTime = null; // This will hold the time when the timer started
         let originalInitialTime = initialTime; // Store the original initial time
-        let isPaused = true
+        let isPaused = true;
     
         const updateDisplay = () => {
             displayElement.textContent = formatTime(timeRemaining, showHours);
@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 category: tab.getAttribute('data-category')
             });
         });
-        localStorage.setItem('tabs', JSON.stringify(tabs));
+        localStorage.setItem('tabs', JSON.stringify(tabs.reverse()));
     };
 
     addTabButton.addEventListener('click', function() {
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 category: li.getAttribute('data-category')
             });
         });
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('tasks', JSON.stringify(tasks.reverse()));
     };
 
     const addTaskToDOM = (taskText, completed = false, category) => {
