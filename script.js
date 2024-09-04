@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveSettingsButton = document.getElementById('save-settings');
     let sound = document.getElementById('mySound');
     let soundOn = document.getElementById('sound-switch');
-    var workdayHours = 8;
-    var workdayMinutes = 0;
-    var focusTime = 52;
-    var breakTime = 17;
+    let workdayHours = 8;
+    let workdayMinutes = 0;
+    let focusTime = 52;
+    let breakTime = 17;
     let isBreak = false;
 
     const formatTime = (seconds, showHours = false) => {
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return seconds;
     };
 
-    const createTimer = (displayElement, startButton, pauseButton, resetButton, initialTime, showHours = false, skipButton = null, onEndCallback = null) => {
+    const createTimer = (displayElement, startButton, pauseButton, resetButton, initialTime, showHours = false, skipButton = null, hasEndCallback = false) => {
         let timeRemaining = initialTime;
         let intervalId = null;
         let startTime = null; // This will hold the time when the timer started
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (soundOn.checked) {
                     sound.play();
                 }
-                if (onEndCallback) {
+                if (hasEndCallback) {
                     onEndCallback();
                 }
             }
@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newTime >= 0) {
                 timeRemaining = newTime;
                 initialTime = newTime;
-                originalInitialTime = newTime; // Update the original initial time
                 startTime = Date.now(); // Adjust start time when manually changing the timer
             }
             displayElement.contentEditable = false;
@@ -135,6 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
         updateDisplay();
+
+        const onEndCallback = () => {
+            setTimeout(() => {
+                alert(`${isBreak ? 'Break' : 'Work'} time is over!`);
+                isBreak = !isBreak; 
+                originalInitialTime = isBreak ? breakTime * 60 : focusTime * 60;
+                resetTimer();
+            }, 500);
+        }
     
         return {
             start: startTimer,
@@ -152,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
 
-    createTimer(
+    const workdayTimer = createTimer(
         document.getElementById('workday-display'),
         document.getElementById('workday-start'),
         document.getElementById('workday-pause'),
@@ -175,19 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 isBreak ? breakTime * 60 : focusTime * 60,
                 false,
                 document.getElementById('focus-skip'),
-                () => {
-                    // Delay the alert to ensure the sound starts playing
-                    setTimeout(() => {
-                        alert(`${isBreak ? 'Break' : 'Work'} time is over!`);
-                        isBreak = !isBreak; 
-                        focusTimer(focusTime, breakTime);
-                    }, 500);
-                }
+                true
             );
         }
     };
 
     focusTimer(focusTime, breakTime);
+
 
     // Event listener for toggling the settings popup
     settingsIcon.addEventListener('click', () => {
@@ -215,14 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             focusTime = parseInt(document.getElementById('default-focus-minutes').value);
             breakTime = parseInt(document.getElementById('default-focus-break-minutes').value);
 
-            createTimer(
-                document.getElementById('workday-display'),
-                document.getElementById('workday-start'),
-                document.getElementById('workday-pause'),
-                document.getElementById('workday-reset'),
-                workdayHours * 3600 + workdayMinutes * 60,
-                true
-            );
+            workdayTimer.updateInitialTime(workdayHours * 3600 + workdayMinutes * 60);
 
             focusTimer(focusTime, breakTime);
             settingsPopup.classList.add('hidden');
