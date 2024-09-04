@@ -366,6 +366,11 @@ button:active {
     max-width: calc(100% - 13em);
 }
 
+#task-list li:hover {
+    background-color: #bebebe4a;
+}
+
+
 /* Edit, delete, and complete button styles with icons */
 .complete-btn, .edit-btn, .delete-btn {
     background: none;
