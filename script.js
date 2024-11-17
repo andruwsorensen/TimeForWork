@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let startTime = null; // This will hold the time when the timer started
         let originalInitialTime = initialTime; // Store the original initial time
         let isPaused = true;
+        
     
         const updateDisplay = () => {
             displayElement.textContent = formatTime(timeRemaining, showHours);
