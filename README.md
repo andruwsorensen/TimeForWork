@@ -2,6 +2,8 @@
 
 A web application designed to help users manage their workday with timers and a task list. The application features a Workday Timer, a Focus Timer, and a task management system where tasks can be added, edited, completed, and reordered. The app also includes a settings menu for customizing default timer values.
 
+You can access the site today at https://andruwsorensen.github.io/TimeForWork/
+
 ## Features
 
 - **Workday Timer**: A countdown timer that defaults to 8 hours but can be customized.
